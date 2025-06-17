@@ -5,15 +5,18 @@ namespace Parkopolis
 {
     internal class Garage<T> : IEnumerable<T> where T : IVehicle
     {
-
-        private T[] _vehicles;
         private int _capacity;
+        private int _count;
+        private T[] _vehicles;
 
         public Garage(int capacity)
         {
             _capacity = capacity;
+            _count = 0;
             _vehicles = new T[_capacity];
         }
+
+        public int Count => _count;
 
         public bool IsRegNumExists(string regNum)
         {

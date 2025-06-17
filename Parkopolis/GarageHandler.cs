@@ -1,25 +1,66 @@
-﻿namespace Parkopolis
-{
-    class GarageHandler<T> where T : Vehicle
-    {
-        private readonly Garage<T> _garage;
+﻿using Parkopolis.Interfaces;
 
-        public GarageHandler(Garage<T> garage)
+namespace Parkopolis
+{
+    class GarageHandler : IHandler
+    {
+        private Garage<IVehicle>? _garageInstance;
+
+
+        // Use property in methods
+        private Garage<IVehicle> GarageInstance
         {
-            _garage = garage;
+            get
+            {
+                return _garageInstance ?? throw new InvalidOperationException(
+                    "Garage has not been initialized. Call InitializeGarage() first.");
+            }
         }
 
-        public bool RegisterVehicle(T vehicle) // Method to use in UI
+        public int VehicleCount => GarageInstance.Count;
+
+        // Methods to use in UI
+
+        public void AddVehicle()
         {
-            if (_garage.IsRegNumExists(vehicle.RegNum))
+            throw new NotImplementedException();
+        }
+
+        public void RemoveVehicle()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void InitializeGarage(int capacity)
+        {
+            if (capacity <= 0)
             {
-                Console.WriteLine($"It is not possible to register the vehicle because RegNum '{vehicle.RegNum}' is already registered.");
-                return false;
+                throw new ArgumentException("Garage capacity must be greater than zero.", nameof(capacity));
             }
 
-            Console.WriteLine("Failed to register vehicle due to an unexpected error.");
-            return false;
+            _garageInstance = new Garage<IVehicle>(capacity);
+        }
+
+        public void SearchVehicle()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SearchVehicleRegNum()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShowAllVehicleTypes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ShowAllVehicles()
+        {
+            throw new NotImplementedException();
         }
 
     }
 }
+
