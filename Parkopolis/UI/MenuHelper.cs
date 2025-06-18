@@ -15,5 +15,12 @@
         public const string Remove = "4";
         public const string SearchRegNum = "5";
         public const string Search = "6";
+
+        // Vehicle types
+        public const string Car = "1";
+        public const string Motorcycle = "2";
+        public const string Truck = "3";
+        public const string Bus = "4";
+        public const string Hovercraft = "5";
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Parkopolis.Interfaces;
+using Parkopolis.Vehicles;
 
 namespace Parkopolis
 {
@@ -18,18 +19,14 @@ namespace Parkopolis
         }
 
         public int VehicleCount => GarageInstance.Count;
+        public bool IsGarageFull => GarageInstance.IsFull;
+
+        public bool IsRegNumExists(string regNum)
+        {
+            return GarageInstance.IsRegNumExists(regNum);
+        }
 
         // Methods to use in UI
-
-        public void AddVehicle()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RemoveVehicle()
-        {
-            throw new NotImplementedException();
-        }
 
         public void InitializeGarage(int capacity)
         {
@@ -41,25 +38,86 @@ namespace Parkopolis
             _garageInstance = new Garage<IVehicle>(capacity);
         }
 
-        public void SearchVehicle()
+        public string AddVehicle(VehicleType type, string regNum, string color, bool needsElectrical, string typeSpecificParam)
         {
-            throw new NotImplementedException();
+            IVehicle? vehicle = null;
+
+            switch (type)
+            {
+                case VehicleType.Car:
+                    vehicle = new Car(regNum, color, needsElectrical, typeSpecificParam);
+                    break;
+                default:
+                    return $"Vehicle type {type} does not accept string parameter";
+            }
+
+            if (vehicle == null)
+                return "Failed to create vehicle";
+
+            string message = GarageInstance.Add(vehicle);
+            return message;
         }
 
-        public void SearchVehicleRegNum()
+        public string AddVehicle(VehicleType type, string regNum, string color, bool needsElectrical, bool typeSpecificParam)
         {
-            throw new NotImplementedException();
+            IVehicle? vehicle = null;
+
+            switch (type)
+            {
+                case VehicleType.Motorcycle:
+                    vehicle = new Motorcycle(regNum, color, needsElectrical, typeSpecificParam);
+                    break;
+                case VehicleType.Bus:
+                    vehicle = new Bus(regNum, color, needsElectrical, typeSpecificParam);
+                    break;
+                case VehicleType.Truck:
+                    vehicle = new Truck(regNum, color, needsElectrical, typeSpecificParam);
+                    break;
+                case VehicleType.Hovercraft:
+                    vehicle = new Hovercraft(regNum, color, needsElectrical, typeSpecificParam);
+                    break;
+                default:
+                    return $"Vehicle type {type} does not accept boolean parameter";
+            }
+
+            if (vehicle == null)
+                return "Failed to create vehicle";
+
+            string message = GarageInstance.Add(vehicle);
+            return message;
         }
 
-        public void ShowAllVehicleTypes()
+        public List<string> GetAllVehicles()
         {
-            throw new NotImplementedException();
+            var vehicleStrings = new List<string>();
+            foreach (var vehicle in GarageInstance)
+            {
+                if (vehicle != null)
+                {
+                    string specialInfo = GetVehicleSpecialInfo(vehicle);
+                    string vehicleInfo = $"RegNum: {vehicle.RegNum}, Color: {vehicle.Color}, " +
+                                       $"Type: {vehicle.GetType().Name}, " +
+                                       $"NeedsElectricalStation: {(vehicle.NeedsElectricalStation ? "Yes" : "No")}, " +
+                                       $"{specialInfo}";
+                    vehicleStrings.Add(vehicleInfo);
+                }
+            }
+            return vehicleStrings;
         }
 
-        public void ShowAllVehicles()
+        private string GetVehicleSpecialInfo(IVehicle vehicle)
         {
-            throw new NotImplementedException();
+            return vehicle switch
+            {
+                Car car => $"FuelType: {car.FuelType}", // You'll need to expose this property
+                Motorcycle motorcycle => $"NeedsWallSupport: {(motorcycle.NeedsWallSupport ? "Yes" : "No")}", // You'll need to expose this property
+                Bus bus => $"NeedsPassengerPlatform: {(bus.NeedsPassengerPlatform ? "Yes" : "No")}", // You'll need to expose this property
+                Truck truck => $"HasTrailer: {(truck.HasTrailer ? "Yes" : "No")}", // You'll need to expose this property
+                Hovercraft hovercraft => $"RequiresInflationSpace: {(hovercraft.RequiresInflationSpace ? "Yes" : "No")}", // You'll need to expose this property
+                _ => "Unknown vehicle type"
+            };
         }
+
 
     }
 }

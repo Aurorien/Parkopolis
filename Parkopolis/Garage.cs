@@ -17,6 +17,8 @@ namespace Parkopolis
         }
 
         public int Count => _count;
+        public bool IsFull => _count >= _capacity;
+
 
         public bool IsRegNumExists(string regNum)
         {
@@ -28,6 +30,18 @@ namespace Parkopolis
                 }
             }
             return false;
+        }
+
+        public string Add(T vehicle)
+        {
+            if (IsFull)
+                return ("Adding vehicle fails. Garage is full.");
+            else if (IsRegNumExists(vehicle.RegNum))
+                return ($"Adding vehicle. A vehicle with registration number {vehicle.RegNum} are already in the garage.");
+
+            _vehicles[_count] = vehicle;
+            _count++;
+            return ("Success adding vehicle.");
         }
 
 
