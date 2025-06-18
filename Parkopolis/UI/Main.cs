@@ -79,7 +79,13 @@ namespace Parkopolis.UI
                         _garageHandler.AddVehicle();
                         break;
                     case MenuHelper.Remove:
-                        _garageHandler.RemoveVehicle();
+                        if (_garageHandler.VehicleCount < 1)
+                        {
+                            UIHelper.NotAvailableInput(_ui);
+                            break;
+                        }
+                        else
+                            _garageHandler.RemoveVehicle();
                         break;
                     case MenuHelper.SearchRegNum:
                         _garageHandler.SearchVehicleRegNum();
@@ -112,9 +118,9 @@ namespace Parkopolis.UI
             _ui.WriteLine($"{MenuHelper.Add}. Add vehicle");
 
             if (_garageHandler.VehicleCount > 0)
-                _ui.WriteLine("2. Remove Vehicle");
+                _ui.WriteLine($"{MenuHelper.Remove}. Remove Vehicle");
             else
-                _ui.WriteLine("2. Remove Vehicle (No vehicles in garage)");
+                _ui.WriteLineColored($"{MenuHelper.Remove}. Remove Vehicle (No vehicles in garage)", ConsoleColor.DarkGray);
 
             _ui.WriteLine($"{MenuHelper.SearchRegNum}. Search for vehicle by registration number");
             _ui.WriteLine($"{MenuHelper.Search}. Search for vehicle");

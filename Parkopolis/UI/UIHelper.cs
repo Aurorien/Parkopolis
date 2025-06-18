@@ -18,6 +18,12 @@ namespace Parkopolis.UI
             ui.ReadLine();
         }
 
+        public static void NotAvailableInput(IUI ui)
+        {
+            ui.WriteLine("Not available option. Press Enter and try again.");
+            ui.ReadLine();
+        }
+
         public static void ReturnToMenu(IUI ui)
         {
             ui.WriteLine("\n\n\nPress Enter to return to menu...");
