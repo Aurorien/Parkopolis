@@ -18,6 +18,8 @@ namespace Parkopolis
 
         public int Count => _count;
         public bool IsFull => _count >= _capacity;
+        public bool IsEmpty => _count == 0;
+
 
 
         public bool IsRegNumExists(string regNum)
@@ -32,6 +34,18 @@ namespace Parkopolis
             return false;
         }
 
+        //public string Add(T vehicle)
+        //{
+        //    if (IsFull)
+        //        return ("Adding vehicle fails. Garage is full.");
+        //    else if (IsRegNumExists(vehicle.RegNum))
+        //        return ($"Adding vehicle. A vehicle with registration number {vehicle.RegNum} are already in the garage.");
+
+        //    _vehicles[_count] = vehicle;
+        //    _count++;
+        //    return ("Success adding vehicle.");
+        //}
+
         public string Add(T vehicle)
         {
             if (IsFull)
@@ -39,9 +53,32 @@ namespace Parkopolis
             else if (IsRegNumExists(vehicle.RegNum))
                 return ($"Adding vehicle. A vehicle with registration number {vehicle.RegNum} are already in the garage.");
 
-            _vehicles[_count] = vehicle;
-            _count++;
-            return ("Success adding vehicle.");
+            int firstEmptyIndex = Array.FindIndex(_vehicles, v => v == null);
+
+            if (firstEmptyIndex >= 0)
+            {
+                _vehicles[firstEmptyIndex] = vehicle;
+                _count++;
+                return ("Success adding vehicle.");
+            }
+
+            return ("Unexpected error: No free spots found.");
+        }
+
+        public string Remove(string regNum)
+        {
+            // Find the index of the vehicle to remove
+            int index = Array.FindIndex(_vehicles, vehicle =>
+                vehicle != null && vehicle.RegNum.ToLower() == regNum.ToLower());
+
+            if (index >= 0)
+            {
+                _vehicles[index] = default;
+                _count--;
+                return "Vehicle removed successfully.";
+            }
+
+            return "Vehicle not found.";
         }
 
 

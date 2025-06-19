@@ -20,6 +20,7 @@ namespace Parkopolis
 
         public int VehicleCount => GarageInstance.Count;
         public bool IsGarageFull => GarageInstance.IsFull;
+        public bool IsGarageEmpty => GarageInstance.IsEmpty;
 
         public bool IsRegNumExists(string regNum)
         {
@@ -58,6 +59,7 @@ namespace Parkopolis
             return message;
         }
 
+        // AddVehicle overload
         public string AddVehicle(VehicleType type, string regNum, string color, bool needsElectrical, bool typeSpecificParam)
         {
             IVehicle? vehicle = null;
@@ -85,6 +87,20 @@ namespace Parkopolis
 
             string message = GarageInstance.Add(vehicle);
             return message;
+        }
+
+        public string RemoveVehicle(string regNum)
+        {
+            if (string.IsNullOrWhiteSpace(regNum))
+            {
+                return "Registration number cannot be empty.";
+            }
+            else if (!IsRegNumExists(regNum))
+            {
+                return "Registration number does not exist.";
+            }
+
+            return GarageInstance.Remove(regNum);
         }
 
         public List<string> GetAllVehicles()

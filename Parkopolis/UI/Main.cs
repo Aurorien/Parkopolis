@@ -74,10 +74,16 @@ namespace Parkopolis.UI
                         ShowAllVehicleTypes();
                         break;
                     case MenuHelper.Add:
-                        AddVehicle();
+                        if (_garageHandler.IsGarageFull)
+                        {
+                            UIHelper.NotAvailableInput(_ui);
+                            break;
+                        }
+                        else
+                            AddVehicle();
                         break;
                     case MenuHelper.Remove:
-                        if (_garageHandler.VehicleCount < 1)
+                        if (_garageHandler.IsGarageEmpty)
                         {
                             UIHelper.NotAvailableInput(_ui);
                             break;
@@ -113,9 +119,13 @@ namespace Parkopolis.UI
         {
             _ui.WriteLine($"{MenuHelper.ShowAll}. Show all vehichles");
             _ui.WriteLine($"{MenuHelper.ShowAllTypes}. Show all types of vehicles");
-            _ui.WriteLine($"{MenuHelper.Add}. Add vehicle");
 
-            if (_garageHandler.VehicleCount > 0)
+            if (!_garageHandler.IsGarageFull)
+                _ui.WriteLine($"{MenuHelper.Add}. Add Vehicle");
+            else
+                _ui.WriteLineColored($"{MenuHelper.Add}. Add Vehicle (Garage is full)", ConsoleColor.DarkGray);
+
+            if (!_garageHandler.IsGarageEmpty)
                 _ui.WriteLine($"{MenuHelper.Remove}. Remove Vehicle");
             else
                 _ui.WriteLineColored($"{MenuHelper.Remove}. Remove Vehicle (No vehicles in garage)", ConsoleColor.DarkGray);
@@ -177,13 +187,6 @@ namespace Parkopolis.UI
                 UIHeader();
                 _ui.WriteLine("Add vehicle to garage\n\n");
 
-                if (_garageHandler.IsGarageFull)
-                {
-                    _ui.WriteLine("Garage is full! Not possible to add more vehicles.");
-                    UIHelper.ReturnToMenu(_ui);
-                    return;
-                }
-
                 VehicleType? nullableVehicleType = AddVehicleTypeMenu();
 
                 if (nullableVehicleType == null)
@@ -218,13 +221,74 @@ namespace Parkopolis.UI
                     _ui.WriteLine(message);
                 }
 
-                bool addAnotherVehicle = UIHelper.GetBooleanInput("Continue adding vehicles? (y/n): ", _ui);
-                if (addAnotherVehicle)
-                    continue;
-                else
+                if (_garageHandler.IsGarageFull)
+                {
+                    _ui.WriteLine("Garage is full! Not possible to add more vehicles.");
+                    UIHelper.ReturnToMenu(_ui);
+                    return;
+                }
+
+                bool addAnotherVehicle = UIHelper.GetBooleanInput("\nAdd another vehicle? (y/n): ", _ui);
+                if (!addAnotherVehicle)
                 {
                     UIHelper.ReturnToMenu(_ui);
                     MainMenu();
+                    return;
+                }
+            }
+        }
+
+        public void RemoveVehicle()
+        {
+            UIHeader();
+            _ui.WriteLine("\nRemove vehicle from garage\n");
+
+            while (true)
+            {
+                _ui.Write("Enter registration number to remove (or '0' to cancel): ");
+                string input = _ui.ReadLine().Trim();
+
+                if (input == "0")
+                {
+                    UIHelper.ReturnToMenu(_ui);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    _ui.WriteLine("Please enter a valid registration number.");
+                    continue;
+                }
+
+                if (!_garageHandler.IsRegNumExists(input))
+                {
+                    _ui.WriteLine($"No vehicle found with registration number '{input}'. Try again or enter '0' to cancel.");
+                    continue;
+                }
+
+                bool confirmRemoval = UIHelper.GetBooleanInput($"Are you sure you want to remove vehicle '{input}'? (y/n): ", _ui);
+
+                if (confirmRemoval)
+                {
+                    string result = _garageHandler.RemoveVehicle(input);
+                    _ui.WriteLine(result);
+                }
+                else
+                {
+                    _ui.WriteLine("Removal cancelled.");
+                }
+
+                if (_garageHandler.IsGarageEmpty)
+                {
+                    _ui.WriteLine("Garage is empty! Not possible to remove any vehicles.");
+                    UIHelper.ReturnToMenu(_ui);
+                    return;
+                }
+
+                bool removeAnother = UIHelper.GetBooleanInput("Remove another vehicle? (y/n): ", _ui);
+                if (!removeAnother)
+                {
+                    UIHelper.ReturnToMenu(_ui);
                     return;
                 }
             }
@@ -279,12 +343,6 @@ namespace Parkopolis.UI
                 }
 
             }
-        }
-
-
-        public void RemoveVehicle()
-        {
-            throw new NotImplementedException();
         }
 
         public void SearchVehicleRegNum()
