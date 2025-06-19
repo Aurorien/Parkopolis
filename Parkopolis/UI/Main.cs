@@ -172,50 +172,61 @@ namespace Parkopolis.UI
 
         public void AddVehicle()
         {
-            UIHeader();
-            _ui.WriteLine("Add vehicle to garage\n\n");
-
-            if (_garageHandler.IsGarageFull)
+            while (true)
             {
-                _ui.WriteLine("Garage is full! Not possible to add more vehicles.");
-                UIHelper.ReturnToMenu(_ui);
-                return;
-            }
+                UIHeader();
+                _ui.WriteLine("Add vehicle to garage\n\n");
 
-            VehicleType? nullableVehicleType = AddVehicleTypeMenu();
+                if (_garageHandler.IsGarageFull)
+                {
+                    _ui.WriteLine("Garage is full! Not possible to add more vehicles.");
+                    UIHelper.ReturnToMenu(_ui);
+                    return;
+                }
 
-            if (nullableVehicleType == null)
-            {
-                UIHelper.ReturnToMenu(_ui);
-                return;
-            }
+                VehicleType? nullableVehicleType = AddVehicleTypeMenu();
 
-            VehicleType vehicleType = (VehicleType)nullableVehicleType;
+                if (nullableVehicleType == null)
+                {
+                    UIHelper.ReturnToMenu(_ui);
+                    return;
+                }
 
-            string regNum = GetRegNumAddInput();
+                VehicleType vehicleType = (VehicleType)nullableVehicleType;
 
-            if (regNum == null)
-            {
-                UIHelper.ReturnToMenu(_ui);
-                return;
-            }
+                string regNum = GetRegNumAddInput();
 
-            _ui.Write("Color: ");
-            string color = _ui.ReadLine();
+                if (regNum == null)
+                {
+                    UIHelper.ReturnToMenu(_ui);
+                    return;
+                }
 
-            bool needsElectrical = UIHelper.GetBooleanInput("Needs electrical station? (y/n): ", _ui);
+                _ui.Write("Color: ");
+                string color = _ui.ReadLine();
 
-            string? message = CreateVehicle(vehicleType, regNum, color, needsElectrical);
+                bool needsElectrical = UIHelper.GetBooleanInput("Needs electrical station? (y/n): ", _ui);
 
-            if (message == null)
-            {
-                return;
-            }
-            else
-            {
-                _ui.WriteLine(message);
-                UIHelper.ReturnToMenu(_ui);
-                MainMenu();
+                string? message = CreateVehicle(vehicleType, regNum, color, needsElectrical);
+
+                if (message == null)
+                {
+                    return;
+                }
+                else
+                {
+                    _ui.WriteLine(message);
+                }
+
+                bool addAnotherVehicle = UIHelper.GetBooleanInput("Continue adding vehicles? (y/n): ", _ui);
+                if (addAnotherVehicle)
+                    continue;
+                else
+                {
+                    UIHelper.ReturnToMenu(_ui);
+                    MainMenu();
+                    return;
+                }
             }
         }
 
