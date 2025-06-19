@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Parkopolis
 {
-    internal class Garage<T> : IEnumerable<T> where T : IVehicle
+    public class Garage<T> : IEnumerable<T> where T : IVehicle
     {
         private int _capacity;
         private int _count;
@@ -24,27 +24,8 @@ namespace Parkopolis
 
         public bool IsRegNumExists(string regNum)
         {
-            for (int i = 0; i < _capacity; i++)
-            {
-                if (_vehicles[i] != null && _vehicles[i].RegNum == regNum)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return _vehicles.Any(vehicle => vehicle != null && vehicle.RegNum == regNum);
         }
-
-        //public string Add(T vehicle)
-        //{
-        //    if (IsFull)
-        //        return ("Adding vehicle fails. Garage is full.");
-        //    else if (IsRegNumExists(vehicle.RegNum))
-        //        return ($"Adding vehicle. A vehicle with registration number {vehicle.RegNum} are already in the garage.");
-
-        //    _vehicles[_count] = vehicle;
-        //    _count++;
-        //    return ("Success adding vehicle.");
-        //}
 
         public string Add(T vehicle)
         {
