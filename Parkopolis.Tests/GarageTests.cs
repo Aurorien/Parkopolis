@@ -6,7 +6,7 @@ namespace Parkopolis.Tests
     public class GarageTests
     {
         [Fact]
-        public void IsRegNumExists_ChecksIfRegNumExistsToPreventRegNumDuplicates_HappyPath()
+        public void IsRegNumExists_ChecksIfRegNumExistsToPreventRegNumDuplicates_ShouldReturnTrue()
         {
             // Arrange
             var garage = new Garage<IVehicle>(3);
