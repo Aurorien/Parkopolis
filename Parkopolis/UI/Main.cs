@@ -123,12 +123,12 @@ namespace Parkopolis.UI
             if (!_garageHandler.IsGarageFull)
                 _ui.WriteLine($"{MenuHelper.Add}. Add Vehicle");
             else
-                _ui.WriteLineColored($"{MenuHelper.Add}. Add Vehicle (Garage is full)", ConsoleColor.DarkGray);
+                _ui.WriteLineColored($"{MenuHelper.Add}. Add Vehicle (Garage is full)", "DarkGray");
 
             if (!_garageHandler.IsGarageEmpty)
                 _ui.WriteLine($"{MenuHelper.Remove}. Remove Vehicle");
             else
-                _ui.WriteLineColored($"{MenuHelper.Remove}. Remove Vehicle (No vehicles in garage)", ConsoleColor.DarkGray);
+                _ui.WriteLineColored($"{MenuHelper.Remove}. Remove Vehicle (No vehicles in garage)", "DarkGray");
 
             _ui.WriteLine($"{MenuHelper.SearchRegNum}. Search for vehicle by registration number");
             _ui.WriteLine($"{MenuHelper.Search}. Search for vehicle");
@@ -177,7 +177,22 @@ namespace Parkopolis.UI
 
         public void ShowAllVehicleTypes()
         {
-            throw new NotImplementedException();
+            UIHeader();
+            _ui.WriteLine("Vehicle Types in Garage:\n");
+
+            var typeCounts = _garageHandler.GetVehicleTypeCounts();
+
+            var allTypes = Enum.GetNames<VehicleType>();
+
+            foreach (string vehicleType in allTypes)
+            {
+                int count = typeCounts.GetValueOrDefault(vehicleType, 0);
+                var color = count > 0 ? "White" : "DarkGray";
+
+                _ui.WriteLineColored($"{vehicleType}: {count}", color);
+            }
+
+            UIHelper.ReturnToMenu(_ui);
         }
 
         public void AddVehicle()
