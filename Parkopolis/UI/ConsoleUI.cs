@@ -9,16 +9,24 @@ namespace Parkopolis.UI
         public void Clear() => Console.Clear();
         public string ReadLine() => Console.ReadLine() ?? string.Empty;
 
-        public void WriteLineColored<T>(string message, T color)
+        public void WriteLineColored(string message, string color)
         {
-            // Enforces ConsoleColor for the console UI at runtime
-            if (color is not ConsoleColor consoleColor)
+            var originalColor = Console.ForegroundColor;
+            ConsoleColor targetColor;
+
+            if (Enum.TryParse<ConsoleColor>(color, true, out ConsoleColor parsedColor))
             {
-                throw new ArgumentException($"ConsoleUI only supports ConsoleColor, but received {typeof(T).Name}");
+                targetColor = parsedColor;
+            }
+            else
+            {
+                targetColor = originalColor;
+
+                System.Diagnostics.Debug.WriteLine($"[DEV WARNING] Invalid color '{color}'. Using default color." +
+                    $"Only vaild ConsoleColor will have effect.");
             }
 
-            var originalColor = Console.ForegroundColor;
-            Console.ForegroundColor = consoleColor;
+            Console.ForegroundColor = targetColor;
             Console.WriteLine(message);
             Console.ForegroundColor = originalColor;
         }

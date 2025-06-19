@@ -39,6 +39,14 @@ namespace Parkopolis
             _garageInstance = new Garage<IVehicle>(capacity);
         }
 
+        public Dictionary<string, int> GetVehicleTypeCounts()
+        {
+            return GarageInstance
+                .Where(vehicle => vehicle != null)
+                .GroupBy(vehicle => vehicle.GetType().Name)
+                .ToDictionary(group => group.Key, group => group.Count());
+        }
+
         public string AddVehicle(VehicleType type, string regNum, string color, bool needsElectrical, string typeSpecificParam)
         {
             IVehicle? vehicle = null;
