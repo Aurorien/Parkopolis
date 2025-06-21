@@ -377,24 +377,24 @@ namespace Parkopolis.UI
                 case VehicleType.Car:
                     _ui.Write("Fuel type: ");
                     string fuelType = _ui.ReadLine();
-                    string message = _garageHandler.AddVehicle(type, regNum, color, needsElectrical, fuelType); // Fixed by using the instance '_garageHandler'
+                    string message = _garageHandler.AddVehicle(type, regNum, color, needsElectrical, fuelType);
                     return message;
 
                 case VehicleType.Motorcycle:
                     bool wallSupport = UIHelper.GetBooleanInput("Needs wall support? (y/n): ", _ui);
-                    return _garageHandler.AddVehicle(type, regNum, color, needsElectrical, wallSupport); // Fixed by using the instance '_garageHandler'
+                    return _garageHandler.AddVehicle(type, regNum, color, needsElectrical, wallSupport);
 
                 case VehicleType.Truck:
                     bool hasTrailer = UIHelper.GetBooleanInput("Has trailer? (y/n): ", _ui);
-                    return _garageHandler.AddVehicle(type, regNum, color, needsElectrical, hasTrailer); // Fixed by using the instance '_garageHandler'
+                    return _garageHandler.AddVehicle(type, regNum, color, needsElectrical, hasTrailer);
 
                 case VehicleType.Bus:
                     bool needsPlatform = UIHelper.GetBooleanInput("Needs passenger platform? (y/n): ", _ui);
-                    return _garageHandler.AddVehicle(type, regNum, color, needsElectrical, needsPlatform); // Fixed by using the instance '_garageHandler'
+                    return _garageHandler.AddVehicle(type, regNum, color, needsElectrical, needsPlatform);
 
                 case VehicleType.Hovercraft:
                     bool needsInflation = UIHelper.GetBooleanInput("Requires inflation space? (y/n): ", _ui);
-                    return _garageHandler.AddVehicle(type, regNum, color, needsElectrical, needsInflation); // Fixed by using the instance '_garageHandler'
+                    return _garageHandler.AddVehicle(type, regNum, color, needsElectrical, needsInflation);
 
                 default:
                     UIHelper.InvalidMenuInput(_ui);
