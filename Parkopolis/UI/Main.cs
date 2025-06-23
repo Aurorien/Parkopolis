@@ -131,7 +131,7 @@ namespace Parkopolis.UI
                 _ui.WriteLineColored($"{MenuHelper.Remove}. Remove Vehicle (No vehicles in garage)", "DarkGray");
 
             _ui.WriteLine($"{MenuHelper.SearchRegNum}. Search for vehicle by registration number");
-            _ui.WriteLine($"{MenuHelper.Search}. Search for vehicle");
+            _ui.WriteLine($"{MenuHelper.Search}. Search for vehicle - Filter Search");
         }
 
         private void ShowVehicleTypeMenu()
@@ -202,7 +202,7 @@ namespace Parkopolis.UI
                 UIHeader();
                 _ui.WriteLine("Add vehicle to garage\n\n");
 
-                VehicleType? nullableVehicleType = AddVehicleTypeMenu();
+                VehicleType? nullableVehicleType = AddVehicleTypeMenu(); // Will be null if user input 0 to cancel adding vehicle
 
                 if (nullableVehicleType == null)
                 {
@@ -220,7 +220,7 @@ namespace Parkopolis.UI
                     return;
                 }
 
-                _ui.Write("Color: ");
+                _ui.Write("\nColor: ");
                 string color = _ui.ReadLine();
 
                 bool needsElectrical = UIHelper.GetBooleanInput("Needs electrical station? (y/n): ", _ui);
@@ -300,7 +300,7 @@ namespace Parkopolis.UI
                     return;
                 }
 
-                bool removeAnother = UIHelper.GetBooleanInput("Remove another vehicle? (y/n): ", _ui);
+                bool removeAnother = UIHelper.GetBooleanInput("\nRemove another vehicle? (y/n): ", _ui);
                 if (!removeAnother)
                 {
                     UIHelper.ReturnToMenu(_ui);
@@ -313,7 +313,7 @@ namespace Parkopolis.UI
         {
             while (true)
             {
-                _ui.Write("Registration number: ");
+                _ui.Write("\nRegistration number: ");
                 string input = _ui.ReadLine().ToLower();
 
                 if (_garageHandler.IsRegNumExists(input))
@@ -360,14 +360,151 @@ namespace Parkopolis.UI
             }
         }
 
-        public void SearchVehicleRegNum()
-        {
-            throw new NotImplementedException();
-        }
-
         public void SearchVehicle()
         {
-            throw new NotImplementedException();
+            UIHeader();
+            _ui.WriteLine("Search for vehicles\n");
+
+            if (_garageHandler.VehicleCount < 1)
+            {
+                _ui.WriteLine("No vehicles in the garage to search.");
+                UIHelper.ReturnToMenu(_ui);
+                return;
+            }
+
+            var searchCriteria = GetSearchCriteriaFromUser();
+            if (searchCriteria == null) // User cancelled
+            {
+                UIHelper.ReturnToMenu(_ui);
+                return;
+            }
+
+            PerformSearchAndDisplayResults(searchCriteria, "Filter Search");
+        }
+
+        public void SearchVehicleRegNum()
+        {
+            UIHeader();
+            _ui.WriteLine("Search vehicle by registration number\n");
+
+            if (_garageHandler.VehicleCount < 1)
+            {
+                _ui.WriteLine("No vehicles in the garage to search.");
+                UIHelper.ReturnToMenu(_ui);
+                return;
+            }
+
+            _ui.Write("Enter registration number to search for: ");
+            string regNum = _ui.ReadLine().Trim();
+
+            if (string.IsNullOrEmpty(regNum))
+            {
+                _ui.WriteLine("No registration number entered.");
+                UIHelper.ReturnToMenu(_ui);
+                return;
+            }
+
+            var searchCriteria = new SearchCriteria { RegNum = regNum };
+            PerformSearchAndDisplayResults(searchCriteria, $"Registration Number: {regNum}");
+        }
+
+        private SearchCriteria? GetSearchCriteriaFromUser()
+        {
+            var criteria = new SearchCriteria();
+
+            var (scope, vehicleType) = GetVehicleTypeChoice();
+
+            if (scope == SearchScope.Cancelled)
+                return null;
+
+            criteria.Scope = scope;
+            criteria.SpecificType = vehicleType;
+
+            GetBasicSearchCriteria(criteria);
+
+            return criteria;
+        }
+
+        private (SearchScope scope, VehicleType? vehicleType) GetVehicleTypeChoice()
+        {
+            while (true)
+            {
+                _ui.WriteLine("Select vehicle type to search:");
+                _ui.WriteLine($"{MenuHelper.Car}. Car");
+                _ui.WriteLine($"{MenuHelper.Motorcycle}. Motorcycle");
+                _ui.WriteLine($"{MenuHelper.Truck}. Truck");
+                _ui.WriteLine($"{MenuHelper.Bus}. Bus");
+                _ui.WriteLine($"{MenuHelper.Hovercraft}. Hovercraft");
+                _ui.WriteLine($"{MenuHelper.AllVehicleTypes}. All vehicles");
+                _ui.WriteLine($"{MenuHelper.Close}. Cancel");
+                _ui.Write("\nMenu choice: ");
+
+                string input = _ui.ReadLine();
+
+                switch (input)
+                {
+                    case MenuHelper.Car:
+                        return (SearchScope.SpecificType, VehicleType.Car);
+                    case MenuHelper.Motorcycle:
+                        return (SearchScope.SpecificType, VehicleType.Motorcycle);
+                    case MenuHelper.Truck:
+                        return (SearchScope.SpecificType, VehicleType.Truck);
+                    case MenuHelper.Bus:
+                        return (SearchScope.SpecificType, VehicleType.Bus);
+                    case MenuHelper.Hovercraft:
+                        return (SearchScope.SpecificType, VehicleType.Hovercraft);
+                    case MenuHelper.AllVehicleTypes:
+                        return (SearchScope.AllVehicles, null);
+                    case MenuHelper.Close:
+                        return (SearchScope.Cancelled, null);
+                    default:
+                        UIHelper.InvalidMenuInput(_ui);
+                        break;
+                }
+            }
+        }
+
+        private void GetBasicSearchCriteria(SearchCriteria criteria)
+        {
+            _ui.WriteLine("\nSearch by Color (press Enter to skip):");
+            _ui.Write("Color: ");
+            string color = _ui.ReadLine().Trim();
+            if (!string.IsNullOrEmpty(color))
+                criteria.Color = color;
+
+            _ui.WriteLine("\nSearch by electrical station requirement (press Enter to skip):");
+            _ui.WriteLine("y = Needs electrical station");
+            _ui.WriteLine("n = Doesn't need electrical station");
+            _ui.Write("Choice: ");
+            string electrical = _ui.ReadLine().Trim().ToLower();
+
+            if (electrical == "y")
+                criteria.NeedsElectricalStation = true;
+            else if (electrical == "n")
+                criteria.NeedsElectricalStation = false;
+        }
+
+        private void PerformSearchAndDisplayResults(SearchCriteria criteria, string searchDescription)
+        {
+            var results = _garageHandler.SearchVehicles(criteria);
+
+            UIHeader();
+            _ui.WriteLine($"Search Results for {searchDescription}:\n");
+
+            if (results.Count == 0)
+            {
+                _ui.WriteLine("No vehicles found matching the search criteria.");
+            }
+            else
+            {
+                _ui.WriteLine($"Found {results.Count} vehicle{(results.Count == 1 ? "" : "s")}:\n");
+                foreach (var vehicle in results)
+                {
+                    _ui.WriteLine(vehicle);
+                }
+            }
+
+            UIHelper.ReturnToMenu(_ui);
         }
 
         private string? CreateVehicle(VehicleType type, string regNum, string color, bool needsElectrical)

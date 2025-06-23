@@ -15,13 +15,11 @@ namespace Parkopolis.UI
         public static void InvalidMenuInput(IUI ui)
         {
             ui.WriteLine("Invalid input. Press Enter and try again.");
-            ui.ReadLine();
         }
 
         public static void NotAvailableInput(IUI ui)
         {
             ui.WriteLine("Not available option. Press Enter and try again.");
-            ui.ReadLine();
         }
 
         public static void ReturnToMenu(IUI ui)

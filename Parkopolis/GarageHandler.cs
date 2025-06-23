@@ -1,4 +1,5 @@
 ﻿using Parkopolis.Interfaces;
+using Parkopolis.UI;
 using Parkopolis.Vehicles;
 
 namespace Parkopolis
@@ -118,11 +119,7 @@ namespace Parkopolis
             {
                 if (vehicle != null)
                 {
-                    string specialInfo = GetVehicleSpecialInfo(vehicle);
-                    string vehicleInfo = $"RegNum: {vehicle.RegNum}, Color: {vehicle.Color}, " +
-                                       $"Type: {vehicle.GetType().Name}, " +
-                                       $"NeedsElectricalStation: {(vehicle.NeedsElectricalStation ? "Yes" : "No")}, " +
-                                       $"{specialInfo}";
+                    string vehicleInfo = FormatVehicleInfo(vehicle);
                     vehicleStrings.Add(vehicleInfo);
                 }
             }
@@ -133,15 +130,50 @@ namespace Parkopolis
         {
             return vehicle switch
             {
-                Car car => $"FuelType: {car.FuelType}", // You'll need to expose this property
-                Motorcycle motorcycle => $"NeedsWallSupport: {(motorcycle.NeedsWallSupport ? "Yes" : "No")}", // You'll need to expose this property
-                Bus bus => $"NeedsPassengerPlatform: {(bus.NeedsPassengerPlatform ? "Yes" : "No")}", // You'll need to expose this property
-                Truck truck => $"HasTrailer: {(truck.HasTrailer ? "Yes" : "No")}", // You'll need to expose this property
-                Hovercraft hovercraft => $"RequiresInflationSpace: {(hovercraft.RequiresInflationSpace ? "Yes" : "No")}", // You'll need to expose this property
+                Car car => $"Fuel type: {car.FuelType}",
+
+                Motorcycle motorcycle => $"Needs wall support: {(motorcycle.NeedsWallSupport ? "Yes" : "No")}",
+                Bus bus => $"Needs passenger platform: {(bus.NeedsPassengerPlatform ? "Yes" : "No")}",
+                Truck truck => $"Has trailer: {(truck.HasTrailer ? "Yes" : "No")}",
+                Hovercraft hovercraft => $"Requires inflation space: {(hovercraft.RequiresInflationSpace ? "Yes" : "No")}",
                 _ => "Unknown vehicle type"
             };
         }
 
+        public List<string> SearchVehicles(SearchCriteria criteria)
+        {
+            IEnumerable<IVehicle> allRegVehicles = GarageInstance.Where(v => v != null);
+            var query = ApplySearchFilters(allRegVehicles, criteria);
+
+            return query.Select(FormatVehicleInfo).ToList();
+        }
+
+        private IEnumerable<IVehicle> ApplySearchFilters(IEnumerable<IVehicle> vehicles, SearchCriteria criteria)
+        {
+            if (!string.IsNullOrEmpty(criteria.RegNum))
+                vehicles = vehicles.Where(v => v.RegNum.Equals(criteria.RegNum, StringComparison.OrdinalIgnoreCase));
+
+            if (criteria.Scope == SearchScope.SpecificType && criteria.SpecificType.HasValue)
+                vehicles = vehicles.Where(v => v.GetType().Name.Equals(criteria.SpecificType.Value.ToString(), StringComparison.OrdinalIgnoreCase));
+
+            if (!string.IsNullOrEmpty(criteria.Color))
+                vehicles = vehicles.Where(v => v.Color.Equals(criteria.Color, StringComparison.OrdinalIgnoreCase));
+
+            if (criteria.NeedsElectricalStation.HasValue)
+                vehicles = vehicles.Where(v => v.NeedsElectricalStation == criteria.NeedsElectricalStation.Value);
+
+            return vehicles;
+        }
+
+        private string FormatVehicleInfo(IVehicle vehicle)
+        {
+            string specialInfo = GetVehicleSpecialInfo(vehicle);
+            return $"\nType: {vehicle.GetType().Name} \n" +
+                   $"Registration number: {vehicle.RegNum} \n" +
+                   $"Color: {vehicle.Color} \n" +
+                   $"Needs electrical station: {(vehicle.NeedsElectricalStation ? "Yes" : "No")} \n" +
+                   $"{specialInfo}";
+        }
 
     }
 }

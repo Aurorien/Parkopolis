@@ -22,5 +22,6 @@
         public const string Truck = "3";
         public const string Bus = "4";
         public const string Hovercraft = "5";
+        public const string AllVehicleTypes = "6";
     }
 }
