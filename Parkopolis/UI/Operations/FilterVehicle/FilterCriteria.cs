@@ -1,8 +1,8 @@
-﻿namespace Parkopolis.UI
+﻿namespace Parkopolis.UI.Operations.FilterVehicle
 {
-    public class SearchCriteria
+    public class FilterCriteria
     {
-        public SearchScope Scope { get; set; } = SearchScope.AllVehicles;
+        public FilterScope Scope { get; set; } = FilterScope.AllVehicles;
         public VehicleType? SpecificType { get; set; }
         public string? RegNum { get; set; }
         public string? Color { get; set; }

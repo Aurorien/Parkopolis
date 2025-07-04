@@ -14,7 +14,7 @@ namespace Parkopolis.UI
             var originalColor = Console.ForegroundColor;
             ConsoleColor targetColor;
 
-            if (Enum.TryParse<ConsoleColor>(color, true, out ConsoleColor parsedColor))
+            if (System.Enum.TryParse<ConsoleColor>(color, true, out ConsoleColor parsedColor))
             {
                 targetColor = parsedColor;
             }

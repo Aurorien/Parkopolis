@@ -1,5 +1,5 @@
 ﻿using Parkopolis.Interfaces;
-using Parkopolis.UI;
+using Parkopolis.UI.Operations.FilterVehicle;
 using Parkopolis.Vehicles;
 
 namespace Parkopolis
@@ -40,6 +40,7 @@ namespace Parkopolis
             _garageInstance = new Garage<IVehicle>(capacity);
         }
 
+
         public Dictionary<string, int> GetVehicleTypeCounts()
         {
             return GarageInstance
@@ -47,6 +48,7 @@ namespace Parkopolis
                 .GroupBy(vehicle => vehicle.GetType().Name)
                 .ToDictionary(group => group.Key, group => group.Count());
         }
+
 
         public string AddVehicle(VehicleType type, string regNum, string color, bool needsElectrical, string typeSpecificParam)
         {
@@ -112,6 +114,7 @@ namespace Parkopolis
             return GarageInstance.Remove(regNum);
         }
 
+
         public List<string> GetAllVehicles()
         {
             var vehicleStrings = new List<string>();
@@ -125,6 +128,16 @@ namespace Parkopolis
             }
             return vehicleStrings;
         }
+
+
+        public List<string> FilterVehicles(FilterCriteria criteria)
+        {
+            IEnumerable<IVehicle> allRegVehicles = GarageInstance.Where(v => v != null);
+            var query = ApplyFilterFilters(allRegVehicles, criteria);
+
+            return query.Select(FormatVehicleInfo).ToList();
+        }
+
 
         private string GetVehicleSpecialInfo(IVehicle vehicle)
         {
@@ -140,20 +153,13 @@ namespace Parkopolis
             };
         }
 
-        public List<string> SearchVehicles(SearchCriteria criteria)
-        {
-            IEnumerable<IVehicle> allRegVehicles = GarageInstance.Where(v => v != null);
-            var query = ApplySearchFilters(allRegVehicles, criteria);
 
-            return query.Select(FormatVehicleInfo).ToList();
-        }
-
-        private IEnumerable<IVehicle> ApplySearchFilters(IEnumerable<IVehicle> vehicles, SearchCriteria criteria)
+        private IEnumerable<IVehicle> ApplyFilterFilters(IEnumerable<IVehicle> vehicles, FilterCriteria criteria)
         {
             if (!string.IsNullOrEmpty(criteria.RegNum))
                 vehicles = vehicles.Where(v => v.RegNum.Equals(criteria.RegNum, StringComparison.OrdinalIgnoreCase));
 
-            if (criteria.Scope == SearchScope.SpecificType && criteria.SpecificType.HasValue)
+            if (criteria.Scope == FilterScope.SpecificType && criteria.SpecificType.HasValue)
                 vehicles = vehicles.Where(v => v.GetType().Name.Equals(criteria.SpecificType.Value.ToString(), StringComparison.OrdinalIgnoreCase));
 
             if (!string.IsNullOrEmpty(criteria.Color))
@@ -164,6 +170,7 @@ namespace Parkopolis
 
             return vehicles;
         }
+
 
         private string FormatVehicleInfo(IVehicle vehicle)
         {

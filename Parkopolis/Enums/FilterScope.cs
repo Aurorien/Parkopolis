@@ -1,4 +1,4 @@
-﻿public enum SearchScope
+﻿public enum FilterScope
 {
     AllVehicles,
     SpecificType,

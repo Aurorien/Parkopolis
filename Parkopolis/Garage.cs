@@ -5,41 +5,46 @@ namespace Parkopolis
 {
     public class Garage<T> : IEnumerable<T> where T : IVehicle
     {
-        private int _capacity;
-        private int _count;
         private T[] _vehicles;
+        public int Capacity { get; private set; }
+        public int Count { get; private set; }
 
         public Garage(int capacity)
         {
-            _capacity = capacity;
-            _count = 0;
-            _vehicles = new T[_capacity];
+            Capacity = capacity;
+            Count = 0;
+            _vehicles = new T[Capacity];
         }
 
-        public int Count => _count;
-        public bool IsFull => _count >= _capacity;
-        public bool IsEmpty => _count == 0;
+
+        //ToDo : Move this logic to GarageHandler ?
+        public bool IsFull => Count >= Capacity;
+        public bool IsEmpty => Count == 0;
+        //
 
 
-
+        //ToDo : Move this logic to GarageHandler ?
         public bool IsRegNumExists(string regNum)
         {
             return _vehicles.Any(vehicle => vehicle != null && vehicle.RegNum == regNum);
         }
+        //
 
         public string Add(T vehicle)
         {
+            //ToDo : Move this logic to GarageHandler ?
             if (IsFull)
                 return ("Adding vehicle fails. Garage is full.");
             else if (IsRegNumExists(vehicle.RegNum))
                 return ($"Adding vehicle. A vehicle with registration number {vehicle.RegNum} are already in the garage.");
+            //
 
             int firstEmptyIndex = Array.FindIndex(_vehicles, v => v == null);
 
             if (firstEmptyIndex >= 0)
             {
                 _vehicles[firstEmptyIndex] = vehicle;
-                _count++;
+                Count++;
                 return ("Success adding vehicle.");
             }
 
@@ -48,14 +53,15 @@ namespace Parkopolis
 
         public string Remove(string regNum)
         {
-            // Find the index of the vehicle to remove
+
             int index = Array.FindIndex(_vehicles, vehicle =>
                 vehicle != null && vehicle.RegNum.ToLower() == regNum.ToLower());
+
 
             if (index >= 0)
             {
                 _vehicles[index] = default;
-                _count--;
+                Count--;
                 return "Vehicle removed successfully.";
             }
 

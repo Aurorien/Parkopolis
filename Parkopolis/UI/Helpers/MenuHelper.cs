@@ -1,4 +1,4 @@
-﻿namespace Parkopolis.UI
+﻿namespace Parkopolis.UI.Helpers
 {
     public static class MenuHelper
     {
@@ -14,7 +14,7 @@
         public const string Add = "3";
         public const string Remove = "4";
         public const string SearchRegNum = "5";
-        public const string Search = "6";
+        public const string Filter = "6";
 
         // Vehicle types
         public const string Car = "1";
