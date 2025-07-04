@@ -32,7 +32,7 @@ namespace Parkopolis.UI.Operations
 
                 VehicleType vehicleType = (VehicleType)nullableVehicleType;
 
-                string regNum = InputValidation.GetAddRegNumInput(_ui, _garageHandler);
+                string regNum = InputValidation.GetRegNumInput(_ui, _garageHandler);
 
                 string color = InputValidation.GetStringInput("Color: ", _ui);
 
