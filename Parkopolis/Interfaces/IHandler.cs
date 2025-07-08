@@ -16,7 +16,7 @@ namespace Parkopolis.Interfaces
         string AddVehicle(VehicleType type, string regNum, string color, bool needsElectrical, bool typeSpecificParam);
         string RemoveVehicle(string regNum);
 
-        List<string> GetAllVehicles();
-        List<string> FilterVehicles(FilterCriteria criteria);
+        List<IVehicle> GetAllVehicles();
+        List<IVehicle> FilterVehicles(FilterCriteria criteria);
     }
 }

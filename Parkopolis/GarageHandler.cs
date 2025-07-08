@@ -8,8 +8,7 @@ namespace Parkopolis
     {
         private Garage<IVehicle>? _garageInstance;
 
-
-        // Use property in methods
+        // Use property in methods to avoid extra null checks
         private Garage<IVehicle> GarageInstance
         {
             get
@@ -25,10 +24,9 @@ namespace Parkopolis
 
         public bool IsRegNumExists(string regNum)
         {
-            return GarageInstance.IsRegNumExists(regNum);
-        }
+            return GarageInstance.Any(v => v != null && v.RegNum.Equals(regNum));
 
-        // Methods to use in UI
+        }
 
         public void InitializeGarage(int capacity)
         {
@@ -44,7 +42,6 @@ namespace Parkopolis
         public Dictionary<string, int> GetVehicleTypeCounts()
         {
             return GarageInstance
-                .Where(vehicle => vehicle != null)
                 .GroupBy(vehicle => vehicle.GetType().Name)
                 .ToDictionary(group => group.Key, group => group.Count());
         }
@@ -52,6 +49,11 @@ namespace Parkopolis
 
         public string AddVehicle(VehicleType type, string regNum, string color, bool needsElectrical, string typeSpecificParam)
         {
+            if (GarageInstance.IsFull)
+                return ("Adding vehicle fails. Garage is full.");
+            else if (IsRegNumExists(regNum))
+                return ($"Adding vehicle fails. A vehicle with registration number {regNum} are already in the garage.");
+
             IVehicle? vehicle = null;
 
             switch (type)
@@ -115,47 +117,15 @@ namespace Parkopolis
         }
 
 
-        public List<string> GetAllVehicles()
+        public List<IVehicle> GetAllVehicles()
         {
-            var vehicleStrings = new List<string>();
-            foreach (var vehicle in GarageInstance)
-            {
-                if (vehicle != null)
-                {
-                    string vehicleInfo = FormatVehicleInfo(vehicle);
-                    vehicleStrings.Add(vehicleInfo);
-                }
-            }
-            return vehicleStrings;
+            return GarageInstance.ToList<IVehicle>();
         }
 
 
-        public List<string> FilterVehicles(FilterCriteria criteria)
+        public List<IVehicle> FilterVehicles(FilterCriteria criteria)
         {
-            IEnumerable<IVehicle> allRegVehicles = GarageInstance.Where(v => v != null);
-            var query = ApplyFilterFilters(allRegVehicles, criteria);
-
-            return query.Select(FormatVehicleInfo).ToList();
-        }
-
-
-        private string GetVehicleSpecialInfo(IVehicle vehicle)
-        {
-            return vehicle switch
-            {
-                Car car => $"Fuel type: {car.FuelType}",
-
-                Motorcycle motorcycle => $"Needs wall support: {(motorcycle.NeedsWallSupport ? "Yes" : "No")}",
-                Bus bus => $"Needs passenger platform: {(bus.NeedsPassengerPlatform ? "Yes" : "No")}",
-                Truck truck => $"Has trailer: {(truck.HasTrailer ? "Yes" : "No")}",
-                Hovercraft hovercraft => $"Requires inflation space: {(hovercraft.RequiresInflationSpace ? "Yes" : "No")}",
-                _ => "Unknown vehicle type"
-            };
-        }
-
-
-        private IEnumerable<IVehicle> ApplyFilterFilters(IEnumerable<IVehicle> vehicles, FilterCriteria criteria)
-        {
+            IEnumerable<IVehicle> vehicles = GarageInstance;
             if (!string.IsNullOrEmpty(criteria.RegNum))
                 vehicles = vehicles.Where(v => v.RegNum.Equals(criteria.RegNum, StringComparison.OrdinalIgnoreCase));
 
@@ -168,20 +138,8 @@ namespace Parkopolis
             if (criteria.NeedsElectricalStation.HasValue)
                 vehicles = vehicles.Where(v => v.NeedsElectricalStation == criteria.NeedsElectricalStation.Value);
 
-            return vehicles;
+            return vehicles.ToList();
         }
-
-
-        private string FormatVehicleInfo(IVehicle vehicle)
-        {
-            string specialInfo = GetVehicleSpecialInfo(vehicle);
-            return $"\nType: {vehicle.GetType().Name} \n" +
-                   $"Registration number: {vehicle.RegNum} \n" +
-                   $"Color: {vehicle.Color} \n" +
-                   $"Needs electrical station: {(vehicle.NeedsElectricalStation ? "Yes" : "No")} \n" +
-                   $"{specialInfo}";
-        }
-
     }
 }
 

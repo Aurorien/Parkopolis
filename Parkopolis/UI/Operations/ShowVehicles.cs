@@ -29,10 +29,8 @@ namespace Parkopolis.UI.Operations
                 _ui.WriteLine($"\nAll Vehicles in Garage ({count} {(count == 1 ? "vehicle" : "vehicles")}):\n");
                 var vehicles = _garageHandler.GetAllVehicles();
 
-                foreach (var vehicle in vehicles)
-                {
-                    _ui.WriteLine(vehicle);
-                }
+                vehicles.ForEach(vehicle => _ui.WriteLine(vehicle.ToString() ?? "Unknown vehicle"));
+
             }
 
             UIHelper.ReturnToMainMenuInfo(_ui);

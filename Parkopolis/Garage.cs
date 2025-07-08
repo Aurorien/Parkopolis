@@ -5,7 +5,7 @@ namespace Parkopolis
 {
     public class Garage<T> : IEnumerable<T> where T : IVehicle
     {
-        private T[] _vehicles;
+        private T?[] _vehicles;
         public int Capacity { get; private set; }
         public int Count { get; private set; }
 
@@ -17,27 +17,16 @@ namespace Parkopolis
         }
 
 
-        //ToDo : Move this logic to GarageHandler ?
         public bool IsFull => Count >= Capacity;
         public bool IsEmpty => Count == 0;
-        //
 
-
-        //ToDo : Move this logic to GarageHandler ?
-        public bool IsRegNumExists(string regNum)
-        {
-            return _vehicles.Any(vehicle => vehicle != null && vehicle.RegNum == regNum);
-        }
-        //
 
         public string Add(T vehicle)
         {
-            //ToDo : Move this logic to GarageHandler ?
             if (IsFull)
                 return ("Adding vehicle fails. Garage is full.");
-            else if (IsRegNumExists(vehicle.RegNum))
-                return ($"Adding vehicle. A vehicle with registration number {vehicle.RegNum} are already in the garage.");
-            //
+            else if (_vehicles.Any(v => v != null && v.RegNum.Equals(vehicle.RegNum)))
+                return ($"Adding vehicle fails. A vehicle with registration number {vehicle.RegNum} are already in the garage.");
 
             int firstEmptyIndex = Array.FindIndex(_vehicles, v => v == null);
 
@@ -50,6 +39,7 @@ namespace Parkopolis
 
             return ("Unexpected error: No free spots found.");
         }
+
 
         public string Remove(string regNum)
         {
@@ -74,7 +64,7 @@ namespace Parkopolis
             foreach (var item in _vehicles)
             {
                 if (item is not null)
-                yield return item;
+                    yield return item;
             }
         }
 

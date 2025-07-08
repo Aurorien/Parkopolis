@@ -150,10 +150,8 @@ namespace Parkopolis.UI.Operations.FilterVehicle
             else
             {
                 _ui.WriteLine($"Found {results.Count} vehicle{(results.Count == 1 ? "" : "s")}:\n");
-                foreach (var vehicle in results)
-                {
-                    _ui.WriteLine(vehicle);
-                }
+                results.ForEach(vehicle => _ui.WriteLine(vehicle.ToString() ?? "Unknown vehicle"));
+
             }
 
             UIHelper.ReturnToMainMenuInfo(_ui);
@@ -174,10 +172,7 @@ namespace Parkopolis.UI.Operations.FilterVehicle
             else
             {
                 _ui.WriteLine($"Found {results.Count} vehicle{(results.Count == 1 ? "" : "s")}:\n");
-                foreach (var vehicle in results)
-                {
-                    _ui.WriteLine(vehicle);
-                }
+                results.ForEach(vehicle => _ui.WriteLine(vehicle.ToString() ?? "Unknown vehicle"));
             }
 
             UIHelper.ReturnToMainMenuInfo(_ui);
