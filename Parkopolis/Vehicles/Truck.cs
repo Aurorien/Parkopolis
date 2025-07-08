@@ -9,5 +9,10 @@
         {
             this._hasTrailer = hasTrailer;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + $"Has trailer: {(HasTrailer ? "Yes" : "No")}";
+        }
     }
 }

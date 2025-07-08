@@ -9,5 +9,10 @@
         {
             this._needsPassengerPlatform = needsPassengerPlatform;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + $"Needs passenger platform: {(NeedsPassengerPlatform ? "Yes" : "No")}";
+        }
     }
 }

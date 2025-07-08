@@ -9,5 +9,9 @@
         {
             this._needsWallSupport = needsWallSupport;
         }
+        public override string ToString()
+        {
+            return base.ToString() + $"Needs wall support: {(NeedsWallSupport ? "Yes" : "No")}";
+        }
     }
 }

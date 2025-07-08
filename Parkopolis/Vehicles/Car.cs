@@ -10,5 +10,10 @@
         {
             this._fuelType = fuelType;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + $"Fuel type: {FuelType}";
+        }
     }
 }

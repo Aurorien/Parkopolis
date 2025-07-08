@@ -10,5 +10,10 @@
         {
             this._requiresInflationSpace = requiresInflationSpace;
         }
+
+        public override string ToString()
+        {
+            return base.ToString() + $"Requires inflation space: {(RequiresInflationSpace ? "Yes" : "No")}";
+        }
     }
 }

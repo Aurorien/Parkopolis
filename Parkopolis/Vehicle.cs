@@ -16,5 +16,12 @@ namespace Parkopolis
             this.NeedsElectricalStation = needsElectricalStation;
         }
 
+        public override string ToString()
+        {
+            return $"\nType: {GetType().Name} \n" +
+                    $"Registration number: {RegNum} \n" +
+                    $"Color: {Color} \n" +
+                    $"Needs electrical station: {(NeedsElectricalStation ? "Yes" : "No")} \n";
+        }
     }
 }
