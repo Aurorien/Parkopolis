@@ -73,6 +73,7 @@ namespace Parkopolis
         {
             foreach (var item in _vehicles)
             {
+                if (item is not null)
                 yield return item;
             }
         }
